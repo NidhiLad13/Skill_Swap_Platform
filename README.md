@@ -12,4 +12,5 @@
 Frontend: Odoo JS (OWL)
 Backend: Python (Odoo ORM)
 
-# DB: PostgreSQL
+# DB
+PostgreSQL
