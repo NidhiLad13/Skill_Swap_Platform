@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Portal Menu -->
+        <template id="portal_my_home_menu_skill_swap" name="Portal layout : skill swap menu entries"
+                  inherit_id="portal.portal_my_home" priority="50">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Skills</t>
+                    <t t-set="url" t-value="'/my/skills'"/>
+                    <t t-set="placeholder_count" t-value="'skill_count'"/>
+                </t>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Swap Requests</t>
+                    <t t-set="url" t-value="'/my/skill_requests'"/>
+                    <t t-set="placeholder_count" t-value="'skill_request_count'"/>
+                </t>
+            </xpath>
+        </template>
+
+        <!-- My Skills Page -->
+        <template id="portal_my_skills" name="My Skills">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Skills</t>
+                </t>
+                <t t-if="not skills">
+                    <div class="alert alert-warning mt-3" role="alert">
+                        You haven't added any skills yet. <a href="/skills/browse">Browse skills</a> to get started!
+                    </div>
+                </t>
+                <t t-if="skills" t-call="portal.portal_table">
+                    <thead>
+                        <tr>
+                            <th>Skill</th>
+                            <th>Category</th>
+                            <th>Level</th>
+                            <th>Type</th>
+                            <th>Availability</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="skills" t-as="skill">
+                            <tr>
+                                <td>
+                                    <t t-esc="skill.skill_name"/>
+                                </td>
+                                <td>
+                                    <t t-esc="skill.category_id.name"/>
+                                </td>
+                                <td>
+                                    <t t-esc="skill.skill_level"/>
+                                </td>
+                                <td>
+                                    <t t-if="skill.is_offered">
+                                        <span class="badge badge-success">Offered</span>
+                                    </t>
+                                    <t t-if="skill.is_wanted">
+                                        <span class="badge badge-info">Wanted</span>
+                                    </t>
+                                </td>
+                                <td>
+                                    <t t-esc="skill.availability"/>
+                                </td>
+                                <td>
+                                    <t t-if="skill.is_public">
+                                        <span class="badge badge-success">Public</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="badge badge-secondary">Private</span>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </t>
+            </t>
+        </template>
+
+        <!-- My Skill Requests Page -->
+        <template id="portal_my_skill_requests" name="My Skill Requests">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Skill Swap Requests</t>
+                </t>
+                <t t-if="not requests">
+                    <div class="alert alert-warning mt-3" role="alert">
+                        You don't have any swap requests yet. <a href="/skills/browse">Browse skills</a> to make your
+                        first request!
+                    </div>
+                </t>
+                <t t-if="requests" t-call="portal.portal_table">
+                    <thead>
+                        <tr>
+                            <th>Reference</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Skills</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="requests" t-as="req">
+                            <tr>
+                                <td>
+                                    <a t-attf-href="/my/skill_requests/#{req.id}">
+                                        <t t-esc="req.name"/>
+                                    </a>
+                                </td>
+                                <!-- Continuing from portal_templates.xml -->
+
+                                <td>
+                                    <t t-esc="req.requester_id.name"/>
+                                </td>
+                                <td>
+                                    <t t-esc="req.provider_id.name"/>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <t t-esc="req.requester_skill_id.skill_name"/>
+                                    </strong>
+                                    ↔
+                                    <strong>
+                                        <t t-esc="req.provider_skill_id.skill_name"/>
+                                    </strong>
+                                </td>
+                                <td>
+                                    <t t-if="req.state == 'pending'">
+                                        <span class="badge badge-warning">Pending</span>
+                                    </t>
+                                    <t t-if="req.state == 'accepted'">
+                                        <span class="badge badge-success">Accepted</span>
+                                    </t>
+                                    <t t-if="req.state == 'rejected'">
+                                        <span class="badge badge-danger">Rejected</span>
+                                    </t>
+                                    <t t-if="req.state == 'completed'">
+                                        <span class="badge badge-info">Completed</span>
+                                    </t>
+                                    <t t-if="req.state == 'cancelled'">
+                                        <span class="badge badge-secondary">Cancelled</span>
+                                    </t>
+                                </td>
+                                <td>
+                                    <t t-esc="req.create_date" t-options='{"widget": "date"}'/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </t>
+            </t>
+        </template>
+
+        <!-- Skill Request Detail Page -->
+        <template id="portal_skill_request_detail" name="Skill Request Detail">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <div class="row">
+                    <div class="col-12">
+                        <h3>Skill Swap Request:
+                            <t t-esc="swap_request.name"/>
+                        </h3>
+                        <hr/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Request Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Reference:</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="swap_request.name"/>
+                                    </dd>
+
+                                    <dt class="col-sm-4">Status:</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-if="swap_request.state == 'pending'">
+                                            <span class="badge badge-warning">Pending</span>
+                                        </t>
+                                        <t t-if="swap_request.state == 'accepted'">
+                                            <span class="badge badge-success">Accepted</span>
+                                        </t>
+                                        <t t-if="swap_request.state == 'rejected'">
+                                            <span class="badge badge-danger">Rejected</span>
+                                        </t>
+                                        <t t-if="swap_request.state == 'completed'">
+                                            <span class="badge badge-info">Completed</span>
+                                        </t>
+                                        <t t-if="swap_request.state == 'cancelled'">
+                                            <span class="badge badge-secondary">Cancelled</span>
+                                        </t>
+                                    </dd>
+
+                                    <dt class="col-sm-4">Requested Date:</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="swap_request.create_date" t-options='{"widget": "datetime"}'/>
+                                    </dd>
+
+                                    <dt class="col-sm-4">Meeting Type:</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="swap_request.meeting_type"/>
+                                    </dd>
+
+                                    <dt class="col-sm-4">Duration:</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="swap_request.estimated_duration"/>
+                                        hours
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Participants</h5>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Requester:</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="swap_request.requester_id.name"/>
+                                    </dd>
+
+                                    <dt class="col-sm-4">Provider:</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="swap_request.provider_id.name"/>
+                                    </dd>
+
+                                    <dt class="col-sm-4">Skill Offered:</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="swap_request.requester_skill_id.skill_name"/>
+                                    </dd>
+
+                                    <dt class="col-sm-4">Skill Requested:</dt>
+                                    <dd class="col-sm-8">
+                                        <t t-esc="swap_request.provider_skill_id.skill_name"/>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Messages</h5>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="swap_request.message">
+                                    <h6>Request Message:</h6>
+                                    <p>
+                                        <t t-esc="swap_request.message"/>
+                                    </p>
+                                </t>
+                                <t t-if="swap_request.response_message">
+                                    <h6>Response Message:</h6>
+                                    <p>
+                                        <t t-esc="swap_request.response_message"/>
+                                    </p>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Browse Skills Page -->
+        <template id="browse_skills" name="Browse Skills">
+            <t t-call="website.layout">
+                <div class="container mt-4">
+                    <div class="row">
+                        <div class="col-12">
+                            <h2>Browse Skills</h2>
+                            <hr/>
+                        </div>
+                    </div>
+
+                    <!-- Search Filters -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Search Filters</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="get">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label for="skill_name">Skill Name</label>
+                                                <input type="text" class="form-control" id="skill_name"
+                                                       name="skill_name"
+                                                       t-att-value="search_filters.get('skill_name', '')"/>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="category_id">Category</label>
+                                                <select class="form-control" id="category_id" name="category_id">
+                                                    <option value="">All Categories</option>
+                                                    <t t-foreach="categories" t-as="category">
+                                                        <option t-att-value="category.id"
+                                                                t-att-selected="search_filters.get('category_id') == str(category.id)">
+                                                            <t t-esc="category.name"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="location">Location</label>
+                                                <input type="text" class="form-control" id="location" name="location"
+                                                       t-att-value="search_filters.get('location', '')"/>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="skill_type">Type</label>
+                                                <select class="form-control" id="skill_type" name="skill_type">
+                                                    <option value="">All Types</option>
+                                                    <option value="offered"
+                                                            t-att-selected="search_filters.get('skill_type') == 'offered'">
+                                                        Offered
+                                                    </option>
+                                                    <option value="wanted"
+                                                            t-att-selected="search_filters.get('skill_type') == 'wanted'">
+                                                        Wanted
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-primary">Search</button>
+                                                <a href="/skills/browse" class="btn btn-secondary">Clear</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills Grid -->
+                    <div class="row">
+                        <t t-if="not skills">
+                            <div class="col-12">
+                                <div class="alert alert-info" role="alert">
+                                    No skills found matching your criteria.
+                                </div>
+                            </div>
+                        </t>
+                        <t t-foreach="skills" t-as="skill">
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a t-attf-href="/skill/#{skill.id}">
+                                                <t t-esc="skill.skill_name"/>
+                                            </a>
+                                        </h5>
+                                        <p class="card-text">
+                                            <strong>By:</strong>
+                                            <t t-esc="skill.user_id.name"/>
+                                            <br/>
+                                            <strong>Category:</strong>
+                                            <t t-esc="skill.category_id.name"/>
+                                            <br/>
+                                            <strong>Level:</strong>
+                                            <t t-esc="skill.skill_level"/>
+                                            <br/>
+                                            <strong>Location:</strong>
+                                            <t t-esc="skill.location or 'Not specified'"/>
+                                            <br/>
+                                            <strong>Availability:</strong>
+                                            <t t-esc="skill.availability or 'Not specified'"/>
+                                        </p>
+                                        <div class="mb-2">
+                                            <t t-if="skill.is_offered">
+                                                <span class="badge badge-success">Offered</span>
+                                            </t>
+                                            <t t-if="skill.is_wanted">
+                                                <span class="badge badge-info">Wanted</span>
+                                            </t>
+                                        </div>
+                                        <t t-if="skill.description">
+                                            <p class="card-text">
+                                                <small class="text-muted"><t t-esc="skill.description[:100]"/>...
+                                                </small>
+                                            </p>
+                                        </t>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a t-attf-href="/skill/#{skill.id}" class="btn btn-primary btn-sm">View
+                                            Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Skill Detail Page -->
+        <template id="skill_detail" name="Skill Detail">
+            <t t-call="website.layout">
+                <div class="container mt-4">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>
+                                        <t t-esc="skill.skill_name"/>
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row">
+                                        <dt class="col-sm-3">Owner:</dt>
+                                        <dd class="col-sm-9">
+                                            <t t-esc="skill.user_id.name"/>
+                                        </dd>
+
+                                        <dt class="col-sm-3">Category:</dt>
+                                        <dd class="col-sm-9">
+                                            <t t-esc="skill.category_id.name"/>
+                                        </dd>
+
+                                        <dt class="col-sm-3">Level:</dt>
+                                        <dd class="col-sm-9">
+                                            <t t-esc="skill.skill_level"/>
+                                        </dd>
+
+                                        <dt class="col-sm-3">Location:</dt>
+                                        <dd class="col-sm-9">
+                                            <t t-esc="skill.location or 'Not specified'"/>
+                                        </dd>
+
+                                        <dt class="col-sm-3">Availability:</dt>
+                                        <dd class="col-sm-9">
+                                            <t t-esc="skill.availability or 'Not specified'"/>
+                                        </dd>
+
+                                        <dt class="col-sm-3">Type:</dt>
+                                        <dd class="col-sm-9">
+                                            <t t-if="skill.is_offered">
+                                                <span class="badge badge-success">Offered</span>
+                                            </t>
+                                            <t t-if="skill.is_wanted">
+                                                <span class="badge badge-info">Wanted</span>
+                                            </t>
+                                        </dd>
+                                    </dl>
+
+                                    <t t-if="skill.description">
+                                        <h5>Description</h5>
+                                        <p>
+                                            <t t-esc="skill.description"/>
+                                        </p>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <t t-if="skill.is_offered and my_skills">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Request Skill Swap</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form method="post" action="/skill_request/create">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="provider_skill_id" t-att-value="skill.id"/>
+
+                                            <div class="form-group">
+                                                <label for="requester_skill_id">Your Skill to Offer</label>
+                                                <select class="form-control" id="requester_skill_id"
+                                                        name="requester_skill_id" required="">
+                                                    <option value="">Select a skill...</option>
+                                                    <t t-foreach="my_skills" t-as="my_skill">
+                                                        <option t-att-value="my_skill.id">
+                                                            <t t-esc="my_skill.skill_name"/>
+                                                            (<t t-esc="my_skill.skill_level"/>)
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="meeting_type">Meeting Type</label>
+                                                <select class="form-control" id="meeting_type" name="meeting_type">
+                                                    <option value="online">Online</option>
+                                                    <option value="in_person">In Person</option>
+                                                    <option value="both">Both</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="estimated_duration">Estimated Duration (hours)</label>
+                                                <input type="number" class="form-control" id="estimated_duration"
+                                                       name="estimated_duration" min="0.5" max="40" step="0.5"
+                                                       value="1"/>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="message">Message (Optional)</label>
+                                                <textarea class="form-control" id="message" name="message" rows="3"
+                                                          placeholder="Introduce yourself and explain what you'd like to learn..."></textarea>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary btn-block">Send Request
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <t t-if="not skill.is_offered">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="alert alert-info" role="alert">
+                                            This skill is wanted by the user, not offered.
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <t t-if="not my_skills">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="alert alert-warning" role="alert">
+                                            You need to add your own skills before requesting a swap.
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

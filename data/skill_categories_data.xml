@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Default Skill Categories -->
+        <record id="category_technology" model="skill.category">
+            <field name="name">Technology</field>
+            <field name="description">Programming, software development, IT skills</field>
+            <field name="color">1</field>
+        </record>
+
+        <record id="category_design" model="skill.category">
+            <field name="name">Design</field>
+            <field name="description">Graphic design, UI/UX, creative skills</field>
+            <field name="color">2</field>
+        </record>
+
+        <record id="category_business" model="skill.category">
+            <field name="name">Business</field>
+            <field name="description">Marketing, sales, management, finance</field>
+            <field name="color">3</field>
+        </record>
+
+        <record id="category_languages" model="skill.category">
+            <field name="name">Languages</field>
+            <field name="description">Foreign languages, communication skills</field>
+            <field name="color">4</field>
+        </record>
+
+        <record id="category_crafts" model="skill.category">
+            <field name="name">Arts  &amp; Crafts</field>
+            <field name="description">Creative arts, handicrafts, music</field>
+            <field name="color">5</field>
+        </record>
+
+        <record id="category_health" model="skill.category">
+            <field name="name">Health  &amp; Wellness</field>
+            <field name="description">Fitness, nutrition, mental health</field>
+            <field name="color">6</field>
+        </record>
+
+        <record id="category_education" model="skill.category">
+            <field name="name">Education</field>
+            <field name="description">Teaching, tutoring, academic subjects</field>
+            <field name="color">7</field>
+        </record>
+
+        <record id="category_lifestyle" model="skill.category">
+            <field name="name">Lifestyle</field>
+            <field name="description">Cooking, gardening, home improvement</field>
+            <field name="color">8</field>
+        </record>
+
+        <!-- Sequence for Swap Requests -->
+        <record id="seq_swap_request" model="ir.sequence">
+            <field name="name">Swap Request</field>
+            <field name="code">swap.request</field>
+            <field name="prefix">SR</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

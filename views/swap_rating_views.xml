@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Swap Rating Tree View -->
+        <record id="view_swap_rating_tree" model="ir.ui.view">
+            <field name="name">swap.rating.tree</field>
+            <field name="model">swap.rating</field>
+            <field name="arch" type="xml">
+                <tree string="Swap Ratings" default_order="create_date desc">
+                    <field name="swap_request_id"/>
+                    <field name="rater_id"/>
+                    <field name="rated_user_id"/>
+                    <field name="rating"/>
+                    <field name="comment"/>
+                    <field name="create_date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Swap Rating Form View -->
+        <record id="view_swap_rating_form" model="ir.ui.view">
+            <field name="name">swap.rating.form</field>
+            <field name="model">swap.rating</field>
+            <field name="arch" type="xml">
+                <form string="Swap Rating">
+                    <header>
+                        <button name="action_approve" type="object" string="Approve"
+                                class="btn-primary"
+                                invisible="state != 'draft'"
+                                groups="skill_swap_platform.group_skill_swap_admin"/>
+
+                        <button name="action_reject" type="object" string="Reject"
+                                class="btn-secondary"
+                                invisible="state != 'draft'"
+                                groups="skill_swap_platform.group_skill_swap_admin"/>
+
+                        <field name="state" widget="statusbar" statusbar_visible="draft,approved,rejected"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="swap_request_id" required="1"/>
+                                <field name="rater_id" required="1"/>
+                                <field name="rated_user_id" required="1"/>
+                                <field name="rating" required="1" widget="priority"/>
+                            </group>
+                            <group>
+                                <field name="create_date" readonly="1"/>
+                                <field name="write_date" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Rating Details">
+                                <group>
+                                    <field name="comment"
+                                           placeholder="Add your feedback about the skill swap experience..."/>
+                                </group>
+                            </page>
+                            <page string="Additional Info">
+                                <group>
+                                    <field name="is_public" help="Make this rating visible to other users"/>
+                                    <field name="helpful_count" readonly="1"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Swap Rating Search View -->
+        <record id="view_swap_rating_search" model="ir.ui.view">
+            <field name="name">swap.rating.search</field>
+            <field name="model">swap.rating</field>
+            <field name="arch" type="xml">
+                <search string="Search Swap Ratings">
+                    <field name="swap_request_id"/>
+                    <field name="rater_id"/>
+                    <field name="rated_user_id"/>
+                    <field name="rating"/>
+                    <field name="comment"/>
+                    <filter name="my_ratings" string="My Ratings" domain="[('rater_id', '=', uid)]"/>
+                    <filter name="ratings_for_me" string="Ratings for Me" domain="[('rated_user_id', '=', uid)]"/>
+                    <filter name="high_ratings" string="High Ratings (4-5 stars)" domain="[('rating', '>=', 4)]"/>
+                    <filter name="low_ratings" string="Low Ratings (1-2 stars)" domain="[('rating', '&lt;=', 2)]"/>
+                    <separator/>
+                    <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                    <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                    <filter name="rejected" string="Rejected" domain="[('state', '=', 'rejected')]"/>
+                    <separator/>
+                    <filter name="public_ratings" string="Public Ratings" domain="[('is_public', '=', True)]"/>
+                    <separator/>
+                    <filter name="this_month" string="This Month"
+                            domain="[('create_date', '>=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-01'))]"/>
+                    <filter name="this_year" string="This Year"
+                            domain="[('create_date', '>=', context_today().strftime('%Y-01-01'))]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_rater" string="Rater" context="{'group_by': 'rater_id'}"/>
+                        <filter name="group_by_rated_user" string="Rated User" context="{'group_by': 'rated_user_id'}"/>
+                        <filter name="group_by_rating" string="Rating" context="{'group_by': 'rating'}"/>
+                        <filter name="group_by_state" string="State" context="{'group_by': 'state'}"/>
+                        <filter name="group_by_date" string="Date" context="{'group_by': 'create_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Swap Rating Kanban View -->
+        <record id="view_swap_rating_kanban" model="ir.ui.view">
+            <field name="name">swap.rating.kanban</field>
+            <field name="model">swap.rating</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state" class="o_kanban_small_column">
+                    <field name="swap_request_id"/>
+                    <field name="rater_id"/>
+                    <field name="rated_user_id"/>
+                    <field name="rating"/>
+                    <field name="comment"/>
+                    <field name="state"/>
+                    <field name="create_date"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="name"/>
+                                            </strong>
+                                        </div>
+                                        <div class="o_kanban_record_top_right">
+                                            <div class="o_priority_star">
+                                                <field name="rating" widget="priority"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                        <div>
+                                            <strong>Rater:</strong>
+                                            <field name="rater_id"/>
+                                        </div>
+                                        <div>
+                                            <strong>Rated User:</strong>
+                                            <field name="rated_user_id"/>
+                                        </div>
+                                        <div t-if="record.comment.raw_value">
+                                            <strong>Comment:</strong>
+                                            <field name="comment" widget="text"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            <field name="create_date" widget="date"/>
+                                        </div>
+                                        <div class="oe_kanban_bottom_right">
+                                            <field name="state" widget="label_selection"
+                                                   options="{'classes': {'draft': 'default', 'approved': 'success', 'rejected': 'danger'}}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Swap Rating Calendar View -->
+        <record id="view_swap_rating_calendar" model="ir.ui.view">
+            <field name="name">swap.rating.calendar</field>
+            <field name="model">swap.rating</field>
+            <field name="arch" type="xml">
+                <calendar string="Swap Ratings" date_start="create_date" color="rating" event_limit="5">
+                    <field name="name"/>
+                    <field name="rater_id"/>
+                    <field name="rated_user_id"/>
+                    <field name="rating"/>
+                    <field name="state"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- Swap Rating Pivot View -->
+        <record id="view_swap_rating_pivot" model="ir.ui.view">
+            <field name="name">swap.rating.pivot</field>
+            <field name="model">swap.rating</field>
+            <field name="arch" type="xml">
+                <pivot string="Swap Ratings Analysis">
+                    <field name="rated_user_id" type="row"/>
+                    <field name="rating" type="col"/>
+                    <field name="id" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Swap Rating Graph View -->
+        <record id="view_swap_rating_graph" model="ir.ui.view">
+            <field name="name">swap.rating.graph</field>
+            <field name="model">swap.rating</field>
+            <field name="arch" type="xml">
+                <graph string="Swap Ratings Statistics" type="bar">
+                    <field name="rating"/>
+                    <field name="id" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_swap_rating" model="ir.actions.act_window">
+            <field name="name">Swap Ratings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">swap.rating</field>
+            <field name="view_mode">kanban,tree,form,calendar,pivot,graph</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">No ratings found!</p>
+                <p>Ratings help build trust in the skill swap community by allowing users to share their experiences.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_my_swap_ratings" model="ir.actions.act_window">
+            <field name="name">My Ratings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">swap.rating</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="context">{'search_default_my_ratings': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">You haven't given any ratings yet!</p>
+                <p>Rate your skill swap experiences to help other users make informed decisions.</p>
+            </field>
+        </record>
+
+        <record id="action_ratings_received" model="ir.actions.act_window">
+            <field name="name">Ratings Received</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">swap.rating</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="context">{'search_default_ratings_for_me': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">You haven't received any ratings yet!</p>
+                <p>Complete skill swaps to receive ratings from other users.</p>
+            </field>
+        </record>
+
+        <!-- Attrs/States Converter Action -->
+        <record id="action_attrs_states_converter" model="ir.actions.client">
+            <field name="name">Attrs/States Converter</field>
+            <field name="tag">skill_swap_platform.attrs_states_converter</field>
+        </record>
+
+        <!-- Menu for Converter Tool -->
+        <menuitem id="menu_attrs_converter"
+                  name="XML Converter"
+                  parent="base.menu_administration"
+                  action="action_attrs_states_converter"
+                  sequence="100"/>
+
+    </data>
+</odoo>

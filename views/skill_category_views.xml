@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Skill Category Tree View -->
+        <record id="view_skill_category_tree" model="ir.ui.view">
+            <field name="name">skill.category.tree</field>
+            <field name="model">skill.category</field>
+            <field name="arch" type="xml">
+                <tree string="Skill Categories">
+                    <field name="name"/>
+                    <field name="skill_count"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Skill Category Form View -->
+        <record id="view_skill_category_form" model="ir.ui.view">
+            <field name="name">skill.category.form</field>
+            <field name="model">skill.category</field>
+            <field name="arch" type="xml">
+                <form string="Skill Category" js_class="skill_category_form" class="skill-category-form">
+                    <header>
+                        <button name="toggle_active" type="object" string="Archive"
+                                class="oe_highlight btn-archive"
+                                data-active="true"
+                                style="display: none;"/>
+                        <button name="toggle_active" type="object" string="Unarchive"
+                                class="oe_highlight btn-unarchive"
+                                data-active="false"
+                                style="display: none;"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="Category Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="color" widget="color"/>
+                                <field name="active" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="skill_count"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description" placeholder="Category description..."/>
+                            </page>
+                            <page string="Skills">
+                                <field name="skill_ids" readonly="1">
+                                    <tree>
+                                        <field name="skill_name"/>
+                                        <field name="user_id"/>
+                                        <field name="skill_level"/>
+                                        <field name="is_offered"/>
+                                        <field name="is_wanted"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Skill Category Action -->
+        <record id="action_skill_category" model="ir.actions.act_window">
+            <field name="name">Skill Categories</field>
+            <field name="res_model">skill.category</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first skill category!
+                </p>
+                <p>
+                    Categories help organize skills and make them easier to find.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_my_skills" model="ir.actions.act_window">
+            <field name="name">My Skills</field>
+            <field name="res_model">user.skill</field>
+            <field name="domain">[('user_id', '=', uid)]</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

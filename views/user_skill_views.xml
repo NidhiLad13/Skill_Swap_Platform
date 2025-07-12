@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form view for user.skill -->
+        <record id="view_user_skill_form" model="ir.ui.view">
+            <field name="name">user.skill.form</field>
+            <field name="model">user.skill</field>
+            <field name="arch" type="xml">
+                <form string="User Skill">
+                    <sheet>
+                        <group>
+                            <field name="skill_name"/>
+                            <field name="user_id"/>
+                            <field name="category_id"/>
+                            <field name="skill_level"/>
+                            <field name="location"/>
+                            <field name="is_offered"/>
+                            <field name="is_wanted"/>
+                            <field name="is_public"/>
+                        </group>
+                        <field name="description"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree view for user.skill -->
+        <record id="view_user_skill_tree" model="ir.ui.view">
+            <field name="name">user.skill.tree</field>
+            <field name="model">user.skill</field>
+            <field name="arch" type="xml">
+                <tree string="User Skills">
+                    <field name="skill_name"/>
+                    <field name="user_id"/>
+                    <field name="category_id"/>
+                    <field name="skill_level"/>
+                    <field name="location"/>
+                    <field name="is_offered"/>
+                    <field name="is_wanted"/>
+                    <field name="is_public"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Kanban view for user.skill -->
+        <record id="view_user_skill_kanban" model="ir.ui.view">
+            <field name="name">user.skill.kanban</field>
+            <field name="model">user.skill</field>
+            <field name="arch" type="xml">
+                <kanban string="User Skills">
+                    <field name="skill_name"/>
+                    <field name="user_id"/>
+                    <field name="category_id"/>
+                    <field name="skill_level"/>
+                    <field name="location"/>
+                    <field name="is_offered"/>
+                    <field name="is_wanted"/>
+                    <field name="is_public"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="o_kanban_record_top">
+                                    <strong>
+                                        <field name="skill_name"/>
+                                    </strong>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <field name="user_id"/>
+                                    <br/>
+                                    <field name="category_id"/>
+                                    <br/>
+                                    Level:
+                                    <field name="skill_level"/>
+                                    <br/>
+                                    Location:
+                                    <field name="location"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span t-if="record.is_offered.raw_value" class="badge badge-success">Offered
+                                        </span>
+                                        <span t-if="record.is_wanted.raw_value" class="badge badge-info">Wanted</span>
+                                        <span t-if="record.is_public.raw_value" class="badge badge-primary">Public
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- YOUR XML CODE GOES HERE -->
+        <!-- Browse Skills Action (if not already defined) -->
+        <record id="action_browse_skills" model="ir.actions.act_window">
+            <field name="name">Browse Skills</field>
+            <field name="res_model">user.skill</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('is_public', '=', True)]</field>
+            <field name="context">{'search_default_is_offered': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No public skills available yet!
+                </p>
+                <p>
+                    Browse skills offered by other users in the community.
+                </p>
+            </field>
+        </record>
+
+        <!-- Search view for better filtering -->
+        <record id="view_user_skill_search" model="ir.ui.view">
+            <field name="name">user.skill.search</field>
+            <field name="model">user.skill</field>
+            <field name="arch" type="xml">
+                <search string="Search Skills">
+                    <field name="skill_name"/>
+                    <field name="user_id"/>
+                    <field name="category_id"/>
+                    <field name="skill_level"/>
+                    <field name="location"/>
+
+                    <filter name="is_offered" string="Offered Skills" domain="[('is_offered', '=', True)]"/>
+                    <filter name="is_wanted" string="Wanted Skills" domain="[('is_wanted', '=', True)]"/>
+                    <filter name="is_public" string="Public Skills" domain="[('is_public', '=', True)]"/>
+                    <filter name="my_skills" string="My Skills" domain="[('user_id', '=', uid)]"/>
+
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_category" string="Category" context="{'group_by': 'category_id'}"/>
+                        <filter name="group_by_user" string="User" context="{'group_by': 'user_id'}"/>
+                        <filter name="group_by_level" string="Level" context="{'group_by': 'skill_level'}"/>
+                        <filter name="group_by_location" string="Location" context="{'group_by': 'location'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="action_my_skills" model="ir.actions.act_window">
+            <field name="name">My Skills</field>
+            <field name="res_model">user.skill</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('user_id', '=', uid)]</field>
+            <field name="context">{'default_user_id': uid}</field>
+        </record>
+
+        <record id="action_user_skill" model="ir.actions.act_window">
+            <field name="name">User Skills</field>
+            <field name="res_model">user.skill</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

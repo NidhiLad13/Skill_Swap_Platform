@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Swap Request Tree View -->
+        <record id="view_swap_request_tree" model="ir.ui.view">
+            <field name="name">swap.request.tree</field>
+            <field name="model">swap.request</field>
+            <field name="arch" type="xml">
+                <tree string="Swap Requests" decoration-info="state=='pending'" decoration-success="state=='accepted'" decoration-danger="state=='rejected'" decoration-muted="state=='cancelled'">
+                    <field name="name"/>
+                    <field name="requester_id"/>
+                    <field name="provider_id"/>
+                    <field name="requester_skill_id"/>
+                    <field name="provider_skill_id"/>
+                    <field name="state"/>
+                    <field name="requested_date"/>
+                    <field name="is_expired"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Swap Request Form View -->
+        <record id="view_swap_request_form" model="ir.ui.view">
+            <field name="name">swap.request.form</field>
+            <field name="model">swap.request</field>
+            <field name="arch" type="xml">
+                <form string="Swap Request">
+                    <header>
+                        <!-- Converted attrs to invisible attribute -->
+                        <button name="action_accept" type="object" string="Accept" class="oe_highlight" invisible="state != 'pending' or provider_id != uid"/>
+                        <button name="action_reject" type="object" string="Reject" invisible="state != 'pending' or provider_id != uid"/>
+                        <button name="action_complete" type="object" string="Mark as Completed" class="oe_highlight" invisible="state != 'accepted'"/>
+                        <button name="action_cancel" type="object" string="Cancel" invisible="state in ('completed', 'cancelled', 'rejected')"/>
+                        <field name="state" widget="statusbar" statusbar_visible="pending,accepted,completed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="requester_id"/>
+                                <field name="requester_skill_id"/>
+                                <field name="provider_id"/>
+                                <field name="provider_skill_id"/>
+                            </group>
+                            <group>
+                                <field name="requested_date"/>
+                                <field name="response_date"/>
+                                <field name="scheduled_date"/>
+                                <field name="completion_date"/>
+                                <field name="is_expired"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="meeting_type"/>
+                                <!-- Converted attrs to invisible attribute -->
+                                <field name="meeting_location" invisible="meeting_type == 'online'"/>
+                                <field name="meeting_link" invisible="meeting_type == 'offline'"/>
+                            </group>
+                            <group>
+                                <field name="estimated_duration"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Messages">
+                                <group>
+                                    <field name="message" placeholder="Message from requester..."/>
+                                    <field name="response_message" placeholder="Response from provider..."/>
+                                </group>
+                            </page>
+                            <!-- Converted attrs to invisible attribute -->
+                            <page string="Ratings" invisible="state != 'completed'">
+                                <group>
+                                    <field name="requester_rating_id"/>
+                                    <field name="provider_rating_id"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Swap Request Kanban View -->
+        <record id="view_swap_request_kanban" model="ir.ui.view">
+            <field name="name">swap.request.kanban</field>
+            <field name="model">swap.request</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="requester_id"/>
+                    <field name="provider_id"/>
+                    <field name="state"/>
+                    <field name="requested_date"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content">
+                                    <h3><field name="name"/></h3>
+                                    <p><strong>From:</strong> <field name="requester_id"/></p>
+                                    <p><strong>To:</strong> <field name="provider_id"/></p>
+                                    <p><strong>Date:</strong> <field name="requested_date"/></p>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- All Swap Requests Action -->
+        <record id="action_swap_request" model="ir.actions.act_window">
+            <field name="name">All Swap Requests</field>
+            <field name="res_model">swap.request</field>
+            <field name="view_mode">kanban,tree,form</field>
+        </record>
+
+        <!-- My Swap Requests Action -->
+        <record id="action_my_swap_requests" model="ir.actions.act_window">
+            <field name="name">My Swap Requests</field>
+            <field name="res_model">swap.request</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">['|', ('requester_id', '=', uid), ('provider_id', '=', uid)]</field>
+        </record>
+    </data>
+</odoo>

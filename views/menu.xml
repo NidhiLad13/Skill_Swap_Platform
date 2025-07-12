@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Main Menu - Create as root menu -->
+       <menuitem id="menu_skill_swap_root"
+          name="Skill Swap"
+          groups="group_skill_swap_user,group_skill_swap_manager"
+          sequence="10"/>
+
+        <!-- Skills Management -->
+        <menuitem id="menu_skills"
+                  name="Skills"
+                  parent="menu_skill_swap_root"
+                  sequence="10"/>
+
+        <menuitem id="menu_skill_categories"
+                  name="Categories"
+                  parent="menu_skills"
+                  action="action_skill_category"
+                  sequence="10"/>
+
+        <menuitem id="menu_user_skills"
+                  name="User Skills"
+                  parent="menu_skills"
+                  action="action_user_skill"
+                  sequence="20"/>
+
+        <!-- My Skills submenu -->
+        <menuitem id="menu_my_skills"
+                  name="My Skills"
+                  parent="menu_skills"
+                  action="action_my_skills"
+                  sequence="30"/>
+
+        <!-- Browse Skills -->
+        <menuitem id="menu_browse_skills"
+                  name="Browse Skills"
+                  parent="menu_skill_swap_root"
+                  action="action_browse_skills"
+                  sequence="15"/>
+
+        <!-- Swap Requests -->
+        <menuitem id="menu_swaps"
+                  name="Swap Requests"
+                  parent="menu_skill_swap_root"
+                  sequence="20"/>
+
+        <menuitem id="menu_swap_requests"
+                  name="All Requests"
+                  parent="menu_swaps"
+                  action="action_swap_request"
+                  sequence="10"/>
+
+        <menuitem id="menu_my_requests"
+                  name="My Requests"
+                  parent="menu_swaps"
+                  action="action_my_swap_requests"
+                  sequence="20"/>
+
+        <!-- Ratings -->
+        <menuitem id="menu_ratings"
+                  name="Ratings"
+                  parent="menu_skill_swap_root"
+                  action="action_swap_rating"
+                  sequence="30"/>
+
+        <menuitem id="menu_my_ratings"
+                  name="My Ratings"
+                  parent="menu_ratings"
+                  action="action_my_swap_ratings"
+                  sequence="10"/>
+
+        <menuitem id="menu_ratings_received"
+                  name="Ratings Received"
+                  parent="menu_ratings"
+                  action="action_ratings_received"
+                  sequence="20"/>
+
+        <!-- Configuration -->
+        <menuitem id="menu_skill_config"
+                  name="Configuration"
+                  parent="menu_skill_swap_root"
+                  sequence="40"
+                  groups="base.group_system"/>
+
+    </data>
+</odoo>

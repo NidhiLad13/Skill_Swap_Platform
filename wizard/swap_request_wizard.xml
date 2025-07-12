@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Swap Request Wizard -->
+        <record id="view_swap_request_wizard_form" model="ir.ui.view">
+            <field name="name">swap.request.wizard.form</field>
+            <field name="model">swap.request.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Create Skill Swap Request">
+                    <group>
+                        <group>
+                            <field name="requester_skill_id"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   placeholder="Select your skill to offer..."/>
+                            <field name="provider_skill_id"
+                                   options="{'no_create': True, 'no_edit': True}"
+                                   placeholder="Select skill to request..."/>
+                        </group>
+                        <group>
+                            <field name="meeting_type"/>
+                            <field name="estimated_duration"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="message" placeholder="Introduce yourself and explain what you'd like to learn..."/>
+                    </group>
+                    <footer>
+                        <button name="action_create_request" type="object" string="Send Request" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Swap Request Response Wizard -->
+        <record id="view_swap_request_response_wizard_form" model="ir.ui.view">
+            <field name="name">swap.request.response.wizard.form</field>
+            <field name="model">swap.request.response.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Respond to Skill Swap Request">
+                    <group>
+                        <field name="request_id" readonly="1"/>
+                        <field name="action_type" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="response_message" placeholder="Add your response message..."/>
+                    </group>
+                    <footer>
+                        <button name="action_respond" type="object" string="Submit Response" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Wizard Actions -->
+        <record id="action_swap_request_wizard" model="ir.actions.act_window">
+            <field name="name">Create Skill Swap Request</field>
+            <field name="res_model">swap.request.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="action_swap_request_response_wizard" model="ir.actions.act_window">
+            <field name="name">Respond to Request</field>
+            <field name="res_model">swap.request.response.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'default_request_id': active_id}</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Email Template for New Swap Request -->
+        <record id="email_template_swap_request" model="mail.template">
+            <field name="name">Skill Swap Request</field>
+            <field name="model_id" ref="model_swap_request"/>
+            <field name="subject">New Skill Swap Request: ${object.name}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Hello ${object.provider_id.name},</p>
+                    <p>You have received a new skill swap request:</p>
+                    <ul>
+                        <li><strong>From:</strong> ${object.requester_id.name}</li>
+                        <li><strong>Skill Offered:</strong> ${object.requester_skill_id.skill_name}</li>
+                        <li><strong>Skill Requested:</strong> ${object.provider_skill_id.skill_name}</li>
+                        <li><strong>Message:</strong> ${object.message or 'No message'}</li>
+                    </ul>
+                    <p>Please log in to your account to respond to this request.</p>
+                    <p>Best regards,<br/>Skill Swap Platform</p>
+                </div>
+            </field>
+            <field name="email_to">${object.provider_id.email}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!-- Email Template for Swap Request Acceptance -->
+        <record id="email_template_swap_accepted" model="mail.template">
+            <field name="name">Skill Swap Request Accepted</field>
+            <field name="model_id" ref="model_swap_request"/>
+            <field name="subject">Swap Request Accepted: ${object.name}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Hello ${object.requester_id.name},</p>
+                    <p>Great news! Your skill swap request has been accepted by ${object.provider_id.name}.</p>
+                    <p><strong>Request Details:</strong></p>
+                    <ul>
+                        <li><strong>Your Skill:</strong> ${object.requester_skill_id.skill_name}</li>
+                        <li><strong>Requested Skill:</strong> ${object.provider_skill_id.skill_name}</li>
+                        <li><strong>Response:</strong> ${object.response_message or 'No response message'}</li>
+                    </ul>
+                    <p>Please coordinate with ${object.provider_id.name} to schedule your skill exchange.</p>
+                    <p>Best regards,<br/>Skill Swap Platform</p>
+                </div>
+            </field>
+            <field name="email_to">${object.requester_id.email}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>
